@@ -1,45 +1,45 @@
 "use client";
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function ChatPage() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
 
-async function sendMessage() {
-  if (!message.trim()) return;
+  async function sendMessage() {
+    if (!message.trim()) return;
 
-  const userMsg = { role: "user", text: message };
+    const userMsg = { role: "user", text: message };
 
-  setMessages((prev) => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
+    setMessage("");
 
-  setMessage("");
+    const typingMsg = { role: "assistant", text: "AI is typing..." };
+    setMessages((prev) => [...prev, typingMsg]);
 
-  // typing indicator
-  const typingMsg = { role: "assistant", text: "AI is typing..." };
-  setMessages((prev) => [...prev, typingMsg]);
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message,
+        session: "rana-user"
+      })
+    });
 
-const res = await fetch("/api/chat", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    message,
-    session: "rana-user"
-  })
-});
+    const data = await res.json();
 
-  const data = await res.json();
-
-  setMessages((prev) => {
-    const updated = [...prev];
-    updated[updated.length - 1] = {
-      role: "assistant",
-      text: data.reply
-    };
-    return updated;
-  });
-}
+    setMessages((prev) => {
+      const updated = [...prev];
+      updated[updated.length - 1] = {
+        role: "assistant",
+        text: data.reply
+      };
+      return updated;
+    });
+  }
 
   return (
     <div className="chat-container">
@@ -53,7 +53,13 @@ const res = await fetch("/api/chat", {
               msg.role === "user" ? "msg user-msg" : "msg bot-msg"
             }
           >
-            {msg.text}
+            {msg.role === "assistant" ? (
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {msg.text}
+              </ReactMarkdown>
+            ) : (
+              msg.text
+            )}
           </div>
         ))}
       </div>
