@@ -18,13 +18,16 @@ async function sendMessage() {
   const typingMsg = { role: "assistant", text: "AI is typing..." };
   setMessages((prev) => [...prev, typingMsg]);
 
-  const res = await fetch("/api/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ message })
-  });
+const res = await fetch("/api/chat", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    message,
+    session: "rana-user"
+  })
+});
 
   const data = await res.json();
 
