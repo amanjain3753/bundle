@@ -2,7 +2,7 @@ export async function POST(req) {
   const body = await req.json();
 
   const res = await fetch(
-    " https://subtegumental-eladia-proctodaeal.ngrok-free.dev/webhook/48b4f655-28b1-4deb-bd09-1fb7e1fe2792",
+    "https://subtegumental-eladia-proctodaeal.ngrok-free.dev/webhook/48b4f655-28b1-4deb-bd09-1fb7e1fe2792",
     {
       method: "POST",
       headers: {
